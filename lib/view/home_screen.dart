@@ -18,12 +18,18 @@ class HomeScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text(controller.totalIncome != 0.0.obs
-                    ? 'Total Income: ${controller.totalIncome}'
-                    : ''),
-                Text(controller.totalExpense != 0.0.obs
-                    ? 'Total Expense: ${controller.totalExpense}'
-                    : ''),
+                Text(
+                  controller.totalIncome != 0.0.obs
+                      ? 'Total Income: ${controller.totalIncome}'
+                      : '',
+                  style: const TextStyle(color: Colors.green),
+                ),
+                Text(
+                  controller.totalExpense != 0.0.obs
+                      ? 'Total Expense: ${controller.totalExpense}'
+                      : '',
+                  style: const TextStyle(color: Colors.red),
+                ),
               ],
             ),
             Expanded(
