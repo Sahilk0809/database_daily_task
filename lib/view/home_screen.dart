@@ -26,36 +26,49 @@ class HomeScreen extends StatelessWidget {
                   onTap: () {
                     controller.getCategoryRecord(1);
                   },
-                  child: controller.totalIncome != 0.0.obs
-                      ? Container(
-                          padding: const EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                            color: Colors.green,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            'Total Income: ${controller.totalIncome}',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        )
-                      : Container(),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'Income: ${controller.totalIncome}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ),
                 GestureDetector(
                   onTap: () {
                     controller.getCategoryRecord(0);
                   },
-                  child: controller.totalExpense != 0.0.obs
-                      ? Container(
-                    padding: const EdgeInsets.all(15),
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
                       color: Colors.red,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Text(
-                      'Total Expense: ${controller.totalExpense}',
+                      'Expense: ${controller.totalExpense}',
                       style: const TextStyle(color: Colors.black),
                     ),
-                  ) : Container(),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    controller.getRecords();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'Total: ${controller.totalIncome.value - controller.totalExpense.value}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
                 ),
               ],
             ),
