@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:database_daily_task/controller/database_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:toast/toast.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -16,21 +20,47 @@ class HomeScreen extends StatelessWidget {
         () => Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Text(
-                  controller.totalIncome != 0.0.obs
-                      ? 'Total Income: ${controller.totalIncome}'
-                      : '',
-                  style: const TextStyle(color: Colors.green),
+                GestureDetector(
+                  onTap: () {
+                    controller.getCategoryRecord(1);
+                  },
+                  child: controller.totalIncome != 0.0.obs
+                      ? Container(
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            'Total Income: ${controller.totalIncome}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        )
+                      : Container(),
                 ),
-                Text(
-                  controller.totalExpense != 0.0.obs
-                      ? 'Total Expense: ${controller.totalExpense}'
-                      : '',
-                  style: const TextStyle(color: Colors.red),
+                GestureDetector(
+                  onTap: () {
+                    controller.getCategoryRecord(0);
+                  },
+                  child: controller.totalExpense != 0.0.obs
+                      ? Container(
+                    padding: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      'Total Expense: ${controller.totalExpense}',
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                  ) : Container(),
                 ),
               ],
+            ),
+            const SizedBox(
+              height: 10,
             ),
             Expanded(
               child: ListView.builder(
@@ -40,7 +70,10 @@ class HomeScreen extends StatelessWidget {
                       ? Colors.green[400]
                       : Colors.red[300],
                   child: ListTile(
-                    leading: Text('${index + 1}'),
+                    leading: CircleAvatar(
+                      backgroundImage:
+                          FileImage(File(controller.data[index]['img'])),
+                    ),
                     title: Text(controller.data[index]['amount'].toString()),
                     subtitle: Text(controller.data[index]['category']),
                     trailing: Row(
@@ -57,6 +90,38 @@ class HomeScreen extends StatelessWidget {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
+                                      GestureDetector(
+                                        onTap: () async {
+                                          ImagePicker imagePicker =
+                                              ImagePicker();
+                                          controller.xFileImage.value =
+                                              (await imagePicker.pickImage(
+                                                  source: ImageSource.gallery));
+                                          controller.pickImage();
+                                        },
+                                        child: Obx(
+                                          () => CircleAvatar(
+                                            radius: 30,
+                                            backgroundImage:
+                                                controller.fileImage.value !=
+                                                        null
+                                                    ? FileImage(
+                                                        File(controller
+                                                            .fileImage
+                                                            .value!
+                                                            .path),
+                                                      )
+                                                    : null,
+                                            child: controller.fileImage.value ==
+                                                    null
+                                                ? const Icon(Icons.add_a_photo)
+                                                : null,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
                                       buildTextFormField(
                                         label: 'Amount',
                                         controller: controller.txtAmount,
@@ -93,6 +158,8 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                   TextButton(
                                     onPressed: () {
+                                      String img =
+                                          controller.fileImage.value!.path;
                                       bool response =
                                           formKey.currentState!.validate();
                                       if (response) {
@@ -102,12 +169,14 @@ class HomeScreen extends StatelessWidget {
                                               controller.txtAmount.text),
                                           controller.isIncome.value ? 1 : 0,
                                           controller.txtCategory.text,
+                                          img,
                                         );
                                       }
-                                      Get.back();
                                       controller.txtAmount.clear();
                                       controller.txtCategory.clear();
                                       controller.isIncome.value = false;
+                                      controller.fileImage = Rx<File?>(null);
+                                      Get.back();
                                     },
                                     child: const Text(
                                       'OK',
@@ -153,6 +222,30 @@ class HomeScreen extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
+                    GestureDetector(
+                      onTap: () async {
+                        ImagePicker imagePicker = ImagePicker();
+                        controller.xFileImage.value = (await imagePicker
+                            .pickImage(source: ImageSource.gallery));
+                        controller.pickImage();
+                      },
+                      child: Obx(
+                        () => CircleAvatar(
+                          radius: 30,
+                          backgroundImage: controller.fileImage.value != null
+                              ? FileImage(
+                                  File(controller.fileImage.value!.path),
+                                )
+                              : null,
+                          child: controller.fileImage.value == null
+                              ? const Icon(Icons.add_a_photo)
+                              : null,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     buildTextFormField(
                       label: 'Amount',
                       controller: controller.txtAmount,
@@ -189,18 +282,21 @@ class HomeScreen extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
+                    String img = controller.fileImage.value!.path;
                     bool response = formKey.currentState!.validate();
                     if (response) {
                       controller.initRecord(
                         double.parse(controller.txtAmount.text),
                         controller.isIncome.value ? 1 : 0,
                         controller.txtCategory.text,
+                        img,
                       );
                     }
                     Get.back();
                     controller.txtAmount.clear();
                     controller.txtCategory.clear();
                     controller.isIncome.value = false;
+                    controller.fileImage = Rx<File?>(null);
                   },
                   child: const Text(
                     'OK',

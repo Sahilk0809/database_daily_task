@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -26,7 +29,8 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         amount REAL NOT NULL,
         isIncome INTEGER NOT NULL,
-        category TEXT
+        category TEXT,
+        img TEXT
         )
         ''';
         db.execute(sql);
@@ -34,13 +38,13 @@ class DatabaseHelper {
     );
   }
 
-  Future<int> insertData(double amount, int isIncome, String category) async {
+  Future<int> insertData(double amount, int isIncome, String category, String img) async {
     final db = await database;
     String sql = '''
-    INSERT INTO $tableName (amount, isIncome, category)
-    VALUES (?,?,?);
+    INSERT INTO $tableName (amount, isIncome, category, img)
+    VALUES (?,?,?,?);
     ''';
-    List args = [amount, isIncome, category];
+    List args = [amount, isIncome, category, img];
     return await db!.rawInsert(sql, args);
   }
 
@@ -52,13 +56,22 @@ class DatabaseHelper {
     return await db!.rawQuery(sql);
   }
 
-  Future<int> updateData(
-      int id, double amount, int isIncome, String category) async {
+  Future<List<Map<String, Object?>>> readCategoryData(int isIncome) async {
     final db = await database;
     String sql = '''
-    UPDATE $tableName SET amount = ?, isIncome = ?, category = ? WHERE id = ?
+    SELECT * FROM $tableName WHERE isIncome = ?
     ''';
-    List args = [amount, isIncome, category, id];
+    List args = [isIncome];
+    return await db!.rawQuery(sql, args);
+  }
+
+  Future<int> updateData(
+      int id, double amount, int isIncome, String category, String img) async {
+    final db = await database;
+    String sql = '''
+    UPDATE $tableName SET amount = ?, isIncome = ?, category = ?, img = ? WHERE id = ?
+    ''';
+    List args = [amount, isIncome, category, img, id];
     return await db!.rawUpdate(sql, args);
   }
 
