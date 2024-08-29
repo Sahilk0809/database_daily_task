@@ -56,6 +56,14 @@ class DatabaseHelper {
     return await db!.rawQuery(sql);
   }
 
+  Future<List<Map<String, Object?>>> readDataBySearch(String search) async {
+    final db = await database;
+    String sql = '''
+    SELECT * FROM $tableName WHERE category LIKE '$search%'
+    ''';
+    return await db!.rawQuery(sql);
+  }
+
   Future<List<Map<String, Object?>>> readCategoryData(int isIncome) async {
     final db = await database;
     String sql = '''

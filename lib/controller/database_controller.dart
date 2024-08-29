@@ -22,7 +22,7 @@ class DatabaseController extends GetxController {
     initDb();
   }
 
-  void setIsIncome(bool value){
+  void setIsIncome(bool value) {
     isIncome.value = value;
   }
 
@@ -30,8 +30,10 @@ class DatabaseController extends GetxController {
     await DatabaseHelper.databaseHelper.database;
   }
 
-  Future<void> initRecord(double amount, int isIncome, String category, String img) async {
-    await DatabaseHelper.databaseHelper.insertData(amount, isIncome, category, img);
+  Future<void> initRecord(
+      double amount, int isIncome, String category, String img) async {
+    await DatabaseHelper.databaseHelper
+        .insertData(amount, isIncome, category, img);
     await getRecords();
   }
 
@@ -39,13 +41,18 @@ class DatabaseController extends GetxController {
     totalIncome = 0.0.obs;
     totalExpense = 0.0.obs;
     data.value = await DatabaseHelper.databaseHelper.readData();
-    for(var check in data){
-      if(check['isIncome'] == 1){
+    for (var check in data) {
+      if (check['isIncome'] == 1) {
         totalIncome.value += check['amount'];
-      } else{
+      } else {
         totalExpense.value += check['amount'];
       }
     }
+    return data;
+  }
+
+  Future getRecordsBySearch(String search) async {
+    data.value = await DatabaseHelper.databaseHelper.readDataBySearch(search);
     return data;
   }
 
@@ -65,7 +72,7 @@ class DatabaseController extends GetxController {
     await getRecords();
   }
 
-  void pickImage(){
+  void pickImage() {
     fileImage.value = File(xFileImage.value!.path);
   }
 }
